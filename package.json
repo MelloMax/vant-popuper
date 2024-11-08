@@ -1,28 +1,58 @@
 {
   "name": "vant-popuper",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "type": "module",
+  "description": "基于vant指令式弹窗封装",
+  "author": "MelloMax<https://github.com/MelloMax>",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MelloMax/vant-popuper"
+  },
+  "bugs": "https://github.com/MelloMax/vant-popuper/issues",
+  "keywords": [
+    "vant",
+    "popup",
+    "pop-up",
+    "Popup",
+    "function",
+    "vue3"
+  ],
   "files": [
     "dist"
   ],
-  "main": "./dist/my-lib.cjs",
-  "module": "./dist/my-lib.js",
+  "peerDependencies": {
+    "vant": "^4.0.0",
+    "vue": "^3.0.0"
+  },
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
+  "typings": "./dist/core.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "vant": "^4.9.8",
-    "vue": "^3.5.12"
+    "vant": "^4.0.0",
+    "vue": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
-    "@vitejs/plugin-vue": "^5.1.4",
+    "@vitejs/plugin-vue": "^4.6.2",
     "@vitejs/plugin-vue-jsx": "^4.0.1",
     "typescript": "~5.6.2",
-    "vite": "^5.4.10",
+    "vite": "^4.5.5",
     "vite-plugin-dts": "^4.3.0",
     "vue-tsc": "^2.1.8"
   }

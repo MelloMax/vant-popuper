@@ -20,7 +20,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "noImplicitAny": false,
+
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["lib/*"]
+    }
   },
-  "include": ["lib/**/*.ts", "lib/**/*.tsx", "lib/**/*.vue"]
+  "include": ["lib/**/*.ts", "lib/**/*.tsx", "lib/**/*.vue"],
+  "exclude": ["node_modules"]
 }

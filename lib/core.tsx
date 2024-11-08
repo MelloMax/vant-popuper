@@ -1,5 +1,5 @@
-import { createApp, mergeProps, onMounted, defineComponent } from 'vue';
-import type { Component } from 'vue';
+import {createApp, mergeProps, onMounted, defineComponent, computed, unref, ref} from 'vue';
+import type {Component} from 'vue';
 import {
     Popup,
     DatePicker,
@@ -8,11 +8,10 @@ import {
     PickerGroup,
     showToast,
 } from 'vant';
-import type { PopupProps } from 'vant';
-import { extend, isFunction, isPromise, noop } from '@/shared';
-import dayjs from 'dayjs';
+import type {PopupProps, PickerConfirmEventParams} from 'vant';
+import {extend, isFunction, isPromise, noop} from '@/shared';
 
-export const mount = (
+const mount = (
     RootComponent: Component,
     target: Element = document.body,
 ) => {
@@ -29,7 +28,7 @@ export const mount = (
     };
 };
 
-export const usePopupState = () => {
+const usePopupState = () => {
     const show = ref(false);
     const toggle = (val: boolean) => {
         show.value = val;
@@ -45,7 +44,7 @@ export const usePopupState = () => {
     };
 };
 
-type UseVantPopup = <T = Component>(
+export type UseVantPopup = <T = Component>(
     Component: T,
     props?: T extends Component<{
             $props: infer P;
@@ -130,10 +129,10 @@ export const propsDefaultEventNoop = (
 };
 
 export const useVantPopup: UseVantPopup = (Component, props, options) => {
-    const { unmount } = mount(
+    const {unmount} = mount(
         defineComponent({
             setup() {
-                const { show, toggle, open, close } = usePopupState();
+                const {show, toggle, open, close} = usePopupState();
                 onMounted(() => open());
 
                 const resolvePopupProps = () => {
@@ -164,9 +163,9 @@ export const useVantPopup: UseVantPopup = (Component, props, options) => {
 
                 return () => (
                     <Popup {...resolvePopupProps()}>
-                    <Component {...resolveProps(props, close)} />
-                </Popup>
-            );
+                        <Component {...resolveProps(props, close)} />
+                    </Popup>
+                );
             },
         }),
         options?.mount,
@@ -198,25 +197,25 @@ export const useVantCalendar = (
     ...args: PopupArgumentRest<typeof Calendar>
 ) => {
     const [props, options] = args;
-    const { unmount } = mount(
+    const {unmount} = mount(
         defineComponent({
             setup() {
-                const { show, toggle, open, close } = usePopupState();
+                const {show, toggle, open, close} = usePopupState();
                 onMounted(() => open());
 
                 return () => (
                     <Calendar
                         {...mergeProps(
-                                resolveProps(propsDefaultEventNoop(props, ['onConfirm']), close),
-                                {
-                                    show: show.value,
-                                    poppable: true,
-                                    'onUpdate:show': toggle,
-                                    onClosed: () => unmount(),
-                                },
-                            )}
-                />
-            );
+                            resolveProps(propsDefaultEventNoop(props, ['onConfirm']), close),
+                            {
+                                show: show.value,
+                                poppable: true,
+                                'onUpdate:show': toggle,
+                                onClosed: () => unmount(),
+                            },
+                        )}
+                    />
+                );
             },
         }),
         options?.mount,
@@ -242,10 +241,10 @@ export const useVantDatePickerGroup = (
     useVantPopup(
         defineComponent({
             emits: ['confirm'],
-            setup(_, { emit }) {
+            setup(_, {emit}) {
                 const startDate = ref<string[]>();
                 const endDate = ref<string[]>();
-                const { defaultDate, minDate, maxDate, ...params } = args[0] ?? {};
+                const {defaultDate, minDate, maxDate, ...params} = args[0] ?? {};
                 if (defaultDate) {
                     startDate.value = defaultDate[0];
                     endDate.value = defaultDate[1];
@@ -267,41 +266,40 @@ export const useVantDatePickerGroup = (
                 return () => (
                     <PickerGroup
                         {...extend(
-                                {
-                                    title: '请选择时间',
-                                    tabs: ['开始时间', '结束时间'],
-                                    nextStepText: '下一步',
-                                },
-                                params,
-                                {
-                                    onConfirm(...args: any[]) {
-                                        if (params.maxRange) {
-                                            const [dates] = args;
-                                            const date = dates.map((v) => v.selectedValues.join('-'));
-                                            const diff = dayjs(date[1]).diff(date[0], 'day');
-                                            console.log(diff, +params.maxRange);
-                                            if (diff > +params.maxRange) {
-                                                showToast(`最多选择 ${params.maxRange} 天`);
-                                                return;
-                                            }
+                            {
+                                title: '请选择时间',
+                                tabs: ['开始时间', '结束时间'],
+                                nextStepText: '下一步',
+                            },
+                            params,
+                            {
+                                onConfirm(...args: [PickerConfirmEventParams[]]) {
+                                    if (params.maxRange) {
+                                        const [dates] = args;
+                                        const [startDate, endDate] = dates.map((v) => new Date(v.selectedValues.join('/')));
+                                        const diff = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1
+                                        if (diff > +params.maxRange) {
+                                            showToast(`最多选择 ${params.maxRange} 天`);
+                                            return;
                                         }
-                                        emit('confirm', ...args);
-                                    },
+                                    }
+                                    emit('confirm', ...args);
                                 },
-                            )}
+                            },
+                        )}
                     >
-                    <DatePicker
-                        v-model={startDate.value}
-                min-date={minDate}
-                max-date={maxDate}
-                />
-                <DatePicker
-                v-model={endDate.value}
-                min-date={currentMinDate.value}
-                max-date={maxDate}
-                />
-                </PickerGroup>
-            );
+                        <DatePicker
+                            v-model={startDate.value}
+                            min-date={minDate}
+                            max-date={maxDate}
+                        />
+                        <DatePicker
+                            v-model={endDate.value}
+                            min-date={currentMinDate.value}
+                            max-date={maxDate}
+                        />
+                    </PickerGroup>
+                );
             },
         }),
         propsDefaultEventNoop(args[0], ['onConfirm', 'onCancel']),
