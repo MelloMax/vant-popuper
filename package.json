@@ -3,7 +3,7 @@
   "private": false,
   "version": "0.0.0",
   "type": "module",
-  "description": "基于vant指令式弹窗封装",
+  "description": "基于vant命令式弹窗封装",
   "author": "MelloMax<https://github.com/MelloMax>",
   "publishConfig": {
     "access": "public",
