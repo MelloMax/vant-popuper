@@ -1,7 +1,7 @@
 {
   "name": "vant-popuper",
   "private": false,
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "description": "基于vant命令式弹窗封装",
   "license": "MIT",
